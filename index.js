@@ -1,17 +1,26 @@
-import React from 'react';
-import ReactDOM from 'react-dom';
-import './index.css';
-import App from './App';
-import reportWebVitals from './reportWebVitals';
+import express from 'express';
+import dotenv from 'dotenv';
+import mongoose from 'mongoose';
+import authRoutes from './route/authRoutes';
+import todoRoutes from './route/todoRoutes';
 
-ReactDOM.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>,
-  document.getElementById('root')
+dotenv.config();
+
+const app = express();
+
+app.use(express.json());
+
+app.use('/api/auth', authRoutes);
+app.use('/api/todo', todoRoutes);
+
+mongoose.connect(process.env.MONGO_URI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true,
+  useFindAndModify: false,
+});
+
+mongoose.connection.on('open', () => console.log('Database connected.'));
+
+app.listen(process.env.PORT, () =>
+  console.log(`server running on http://localhost:${process.env.PORT}`)
 );
-
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();
